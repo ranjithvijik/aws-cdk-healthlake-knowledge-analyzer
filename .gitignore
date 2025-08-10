@@ -1,0 +1,69 @@
+# --- Python cache & bytecode ---
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- Virtual environments ---
+cdkHL/
+cdkHLsource/
+.venv/
+venv/
+env/
+ENV/
+
+# --- Node / React webapp ---
+assets/ka-webapp/node_modules/
+assets/ka-webapp/build/
+assets/ka-webapp/.env.local
+
+# --- AWS CDK generated output ---
+cdk.out/
+cdk.context.json
+cdk.context.*.json
+
+# --- Logs ---
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# --- OS / Editor noise ---
+.DS_Store
+.vscode/
+.idea/
+
+# --- Python packaging ---
+build/
+dist/
+*.egg-info/
+
+# --- Test / coverage artifacts ---
+.coverage*
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+
+# --- Environment & secret files ---
+.env
+.env.*
+!.env.example
+
+# --- Certificates / keys (never commit private keys) ---
+*.pem
+*.key
+*.crt
+*.der
+
+# --- Local scratch / temp ---
+*.swp
+*.swo
+.tmp/
+*.tmp
+
+# --- Jupyter Notebook checkpoints ---
+.ipynb_checkpoints/
+
+# NOTE: Not ignoring assets/lambda_helper_spacy/python.zip because it's a required packaged dependency.
+#       Remove or replace if you move to layers / build-from-source.

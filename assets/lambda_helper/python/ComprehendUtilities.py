@@ -33,11 +33,29 @@ class ComprehendProcessor:
     @staticmethod
     def writeToS3File(bucketName, textData, documentKey):
         s3_client = boto3.client("s3")
-        
         print(f'Writing to S3: {documentKey}')
-        return s3_client.put_object(Body=textData, Bucket=bucketName, Key=documentKey,
-                            ServerSideEncryption='aws:kms',
-                            SSEKMSKeyId='82697d82-ec4c-4890-b585-9900c1ecb44f')
+
+        # KMS SECURITY NOTE:
+        # A hard‑coded KMS KeyId was previously embedded here. This is insecure because:
+        # 1. It leaks internal key identifiers into source control.
+        # 2. It prevents rotation / environment specific keys.
+        # 3. It can break in accounts / regions where the key does not exist.
+        #
+        # Strategy:
+        # - Prefer bucket default encryption (bucket policy / default SSE-KMS) without specifying a key per call.
+        # - Allow optional explicit key override via environment variable KMS_KEY_ID (alias or full ARN/Id).
+        # - Only set ServerSideEncryption + SSEKMSKeyId if an override is provided; otherwise rely on bucket settings.
+        import os
+        kms_key_id = os.getenv("KMS_KEY_ID")  # may be alias/ARN/UUID
+
+        put_args = dict(Body=textData, Bucket=bucketName, Key=documentKey)
+        if kms_key_id:
+            put_args.update({
+                'ServerSideEncryption': 'aws:kms',
+                'SSEKMSKeyId': kms_key_id
+            })
+        # If kms_key_id not supplied, S3 will apply bucket default encryption (AES256 or aws:kms as configured).
+        return s3_client.put_object(**put_args)
     
     def readText(self, bucketName, objectName):
         s3 = boto3.resource('s3')
